@@ -1,8 +1,7 @@
 class Annotate
 {
-    constructor(codeMirror)
+    constructor()
     {
-        this.codeMirror = codeMirror;
         this.tokens = {};
 
         this.initDefault();
@@ -16,9 +15,21 @@ class Annotate
         this.tokens["ReturnStatement"] = true;
     }
 
-    parse()
+    parse(cm, change)
     {
+        console.log("parse");
+        console.log(change);
+    }
 
+    cursorMoved(cm)
+    {
+        console.log("cursor moved");
+    }
+
+    gutterClick(cm, line, gutter, clickEvent)
+    {
+        let info = cm.lineInfo(line);
+        cm.setGutterMarker(line, "breakpoint", info.gutterMarkers ? null : _makeMarker());
     }
 
     on(token)
@@ -60,6 +71,14 @@ class Annotate
     {
 
     }
+}
+
+function _makeMarker()
+{
+    let marker = document.createElement("div");
+    marker.style.color = "#0f0";
+    marker.innerHTML = "●";
+    return marker;
 }
 
 Annotate.ASTTokens =
