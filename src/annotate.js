@@ -7,6 +7,13 @@ class Annotate
         this.initDefault();
     }
 
+    init(cm)
+    {
+        cm.on("change", this.onChange);
+        cm.on("cursorActivity", this.onCursorMove);
+        cm.on("gutterClick", this.onGutterClick);
+    }
+
     initDefault()
     {
         for (let i = 0; i < Annotate.ASTTokens.length; i++)
@@ -17,16 +24,21 @@ class Annotate
 
     parse(cm, change)
     {
-        console.log("parse");
+
+    }
+
+    onChange(cm, change)
+    {
+        console.log("onChange");
         console.log(change);
     }
 
-    cursorMoved(cm)
+    onCursorMove(cm)
     {
         console.log("cursor moved");
     }
 
-    gutterClick(cm, line, gutter, clickEvent)
+    onGutterClick(cm, line, gutter, clickEvent)
     {
         let info = cm.lineInfo(line);
         cm.setGutterMarker(line, "breakpoint", info.gutterMarkers ? null : _makeMarker());
@@ -62,14 +74,31 @@ class Annotate
         this.tokens[token] = !this.tokens[token];
     }
 
-    savePreset(path)
+    savePreset()
     {
+        let preset = "";
+        let keys = Object.keys(this.tokens);
 
+        for (let i = 0; i < keys.length; i++)
+            if (this.tokens[keys[i]])
+            {
+                if (i < keys.length - 1)
+                    preset += key + ",";
+                else
+                    preset += key;
+            }
+
+        return preset;
     }
 
-    loadPreset(path)
+    loadPreset(preset)
     {
+        let enabled = preset.split(",");
+        let keys = Object.keys(this.tokens);
 
+        for (let i = 0; i < keys.length; i++)
+            if (enabled.includes(i))
+                this.tokens[keys[i]] = true;
     }
 }
 

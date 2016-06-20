@@ -1,4 +1,4 @@
-const exampleCode = "function example()\n{\n\treturn 100;\n}\n\nexample();";
+const exampleCode = "function example()\n{\n\treturn 100;\n}\n\nfunction example1()\n{\n\treturn 200;\n}\n\nexample();";
 
 let cm = undefined;
 let ant = undefined;
@@ -14,10 +14,7 @@ function init()
     });
 
     ant = new Annotate();
-
-    cm.on("change", ant.parse);
-    cm.on("cursorActivity", ant.cursorMoved);
-    cm.on("gutterClick", ant.gutterClick);
+    ant.init(cm);
 
     cm.setOption("extraKeys",
     {
@@ -30,9 +27,9 @@ function init()
         {
             let line = cm.getCursor().line;
             let start = 0;
-            let end = cm.lineCount();
+            let end = cm.lineCount() - 1;
 
-            for (let i = line; i < end; i++)
+            for (let i = line; i <= end; i++)
                 if (cm.getLine(i) === "")
                 {
                     end = i - 1;
@@ -42,11 +39,14 @@ function init()
             for (let i = line - 1; i >= 0; i--)
                 if (cm.getLine(i) === "")
                 {
-                    start = i;
+                    start = i + 1;
                     break;
                 }
 
-            console.log("lines: " + start + "-" + end);
+            if (end - start == 0)
+                console.log("line: " + end);
+            else
+                console.log("lines: " + start + "-" + end);
         }
     });
 }
