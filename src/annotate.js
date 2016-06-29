@@ -22,20 +22,30 @@ class Annotate
         this.tokens["ReturnStatement"] = true;
     }
 
-    parse(cm, change)
+    parse(cm, from, to)
+    {
+        let text = cm.getRange(from, to);
+        console.log(text);
+        let ast = acorn.parse_dammit(text);
+        let callbacks = _createCallbacks();
+
+        acorn.walk.simple(ast, callbacks);
+    }
+
+    tick()
     {
 
     }
 
     onChange(cm, change)
     {
-        console.log("onChange");
-        console.log(change);
+        //console.log("onChange");
+        //console.log(change);
     }
 
     onCursorMove(cm)
     {
-        console.log("cursor moved");
+        //console.log("cursor moved");
     }
 
     onGutterClick(cm, line, gutter, clickEvent)
@@ -100,6 +110,22 @@ class Annotate
             if (enabled.includes(i))
                 this.tokens[keys[i]] = true;
     }
+}
+
+function _createCallbacks()
+{
+    let callbacks = {};
+
+    for (let i = 0; i < Annotate.ASTTokens.length; i++)
+    {
+        callbacks[Annotate.ASTTokens[i]] = function(obj)
+        {
+            console.log(i);
+            console.log(obj);
+        };
+    }
+
+    return callbacks;
 }
 
 function _makeMarker()
