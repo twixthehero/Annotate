@@ -1,13 +1,39 @@
 const EXAMPLE_CODE = "function example()\n{\n\treturn 100;\n}\n\nfunction example1()\n{\n\treturn 200;\n}\n\nexample();";
+const EPlayState = { STOPPED: 0, PAUSED: 1, PLAYING: 2 };
 
+//beats per minute
 let bpm = 80;
-let bpmTime = 60 / 80;
+
+//top: beats per measure
+//bottom: note that gets one beat
+let timeSignature = { top: 4, bottom: 4 };
+
+//
+let tickrate = 1 / timeSignature.bottom;
+
+//amount of time between a measure's beats
+let bpmTime = 60 / bpm;
+
+//timer between measure's beats
 let bpmTimer = 0;
+
+//current beat
+//can be a fraction (e.g. 1.25, etc)
 let beat = 0;
+
+//current play state
+let playState = EPlayState.PLAYING;
+
+//previous time update was called
 let lastTime = Date.now();
+
+//current change in time since last update call
 let dt = 0;
 
+//CodeMirror instance
 let cm = undefined;
+
+//Annotate instance
 let ant = undefined;
 
 function init()
@@ -73,13 +99,16 @@ function update()
     dt = (Date.now() - lastTime) / 1000;
     lastTime = Date.now();
 
-    bpmTimer += dt;
-
-    if (bpmTimer >= bpmTime)
+    if (playState == EPlayState.PLAYING)
     {
-        tick();
+        bpmTimer += dt;
 
-        bpmTimer = 0;
+        if (bpmTimer >= bpmTime)
+        {
+            tick();
+
+            bpmTimer = 0;
+        }
     }
 
     requestAnimationFrame(update);
@@ -89,11 +118,62 @@ function tick()
 {
     ant.tick();
 
-    let info = cm.lineInfo(beat);
-    cm.setGutterMarker(beat, "breakpoint", info.gutterMarkers ? null : _makeMarker());
-    beat = (beat + 1) % 4;
-    info = cm.lineInfo(beat);
-    cm.setGutterMarker(beat, "breakpoint", info.gutterMarkers ? null : _makeMarker());
+    let currentBeat = Math.floor(beat);
+    let info = cm.lineInfo(currentBeat);
+    cm.setGutterMarker(currentBeat, "breakpoint", info.gutterMarkers ? null : _makeMarker());
+
+    beat = (beat + tickrate) % timeSignature.bottom;
+
+    currentBeat = Math.floor(beat);
+    info = cm.lineInfo(currentBeat);
+    cm.setGutterMarker(currentBeat, "breakpoint", info.gutterMarkers ? null : _makeMarker());
+}
+
+/*
+ * Helper functions
+ */
+function setTimeSignature(newTime)
+{
+    if (newTime === undefined ||
+        !newTime.hasOwnProperty("top") ||
+        !newTime.hasOwnProperty("bottom"))
+        return;
+
+    timeSignature = newTime;
+
+    _calcTimings();
+    _resetMeasure();
+}
+
+function startPlayback()
+{
+    playState = EPlayState.PLAYING;
+    _resetMeasure();
+}
+
+function pausePlayback()
+{
+    playState = EPlayState.PAUSED;
+}
+
+function stopPlayback()
+{
+    playState = EPlayState.STOPPED;
+    _resetMeasure();
+}
+
+function _resetMeasure()
+{
+    bpmTimer = 0;
+    beat = 0;
+}
+
+function _calcTimings()
+{
+    tickrate = 1 / timeSignature.bottom;
+    bpmTime = 60 / bpm;
+
+    _resetMeasure();
 }
 
 window.onload = init;
