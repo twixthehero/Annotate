@@ -9,10 +9,13 @@ let bpm = 80;
 let timeSignature = { top: 4, bottom: 4 };
 
 //
-let tickrate = 1 / timeSignature.bottom;
+let baseTickrate = 1 / timeSignature.bottom;
 
 //amount of time between a measure's beats
 let bpmTime = 60 / bpm;
+
+//
+let tickrate = bpmTime * baseTickrate;
 
 //timer between measure's beats
 let bpmTimer = 0;
@@ -45,6 +48,10 @@ function init()
         lineNumbers: true,
         gutters: ["CodeMirror-linenumbers", "breakpoint"]
     });
+
+    console.log("bpm: " + bpm);
+    console.log("bpmTime: " + bpmTime);
+    console.log("tickrate: " + tickrate);
 
     let info = cm.lineInfo(beat);
     cm.setGutterMarker(beat, "breakpoint", info.gutterMarkers ? null : _makeMarker());
@@ -103,7 +110,7 @@ function update()
     {
         bpmTimer += dt;
 
-        if (bpmTimer >= bpmTime)
+        if (bpmTimer >= tickrate)
         {
             tick();
 
@@ -116,7 +123,7 @@ function update()
 
 function tick()
 {
-    ant.tick();
+    ant.tick(beat);
 
     let currentBeat = Math.floor(beat);
     let info = cm.lineInfo(currentBeat);
@@ -143,6 +150,12 @@ function setTimeSignature(newTime)
 
     _calcTimings();
     _resetMeasure();
+}
+
+function setTickrate(note)
+{
+    baseTickrate = 1 / (timeSignature.bottom / note);
+    tickrate = bpmTime * baseTickrate;
 }
 
 function startPlayback()

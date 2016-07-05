@@ -3,6 +3,7 @@ class Annotate
     constructor()
     {
         this.tokens = {};
+        this.clocks = [];
 
         this.initDefault();
     }
@@ -19,7 +20,7 @@ class Annotate
         for (let i = 0; i < Annotate.ASTTokens.length; i++)
             this.tokens[Annotate.ASTTokens[i]] = false;
 
-        this.tokens["ReturnStatement"] = true;
+        this.tokens["ArrayExpression"] = true;
     }
 
     parse(cm, from, to)
@@ -27,14 +28,20 @@ class Annotate
         let text = cm.getRange(from, to);
         console.log(text);
         let ast = acorn.parse_dammit(text);
-        let callbacks = _createCallbacks();
+        let callbacks = _createCallbacks(this);
+        console.log("ast", ast);
 
+        console.log("walker");
         acorn.walk.simple(ast, callbacks);
     }
 
-    tick()
+    tick(beatTick)
     {
+        let beat = Math.floor(beatTick);
+        let tick = beatTick - beat;
 
+        for (let i = 0; i < this.clocks.length; i++)
+            this.clocks[i].tick(beat, tick);
     }
 
     onChange(cm, change)
@@ -51,7 +58,7 @@ class Annotate
     onGutterClick(cm, line, gutter, clickEvent)
     {
         let info = cm.lineInfo(line);
-        cm.setGutterMarker(line, "breakpoint", info.gutterMarkers ? null : _makeMarker());
+        //cm.setGutterMarker(line, "breakpoint", info.gutterMarkers ? null : _makeMarker());
     }
 
     on(token)
@@ -112,17 +119,23 @@ class Annotate
     }
 }
 
-function _createCallbacks()
+function _createCallbacks(ant)
 {
     let callbacks = {};
+    let keys = Object.keys(ant.tokens);
 
-    for (let i = 0; i < Annotate.ASTTokens.length; i++)
+    for (let i = 0; i < keys.length; i++)
     {
-        callbacks[Annotate.ASTTokens[i]] = function(obj)
+        if (ant.tokens[keys[i]])
         {
-            console.log(i);
-            console.log(obj);
-        };
+            callbacks[Annotate.ASTTokens[i]] = function(obj, state)
+            {
+                console.log("obj", obj);
+
+                if (state != undefined)
+                    console.log("state", state);
+            };
+        }
     }
 
     return callbacks;
