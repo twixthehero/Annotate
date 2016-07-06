@@ -92,6 +92,10 @@ function init()
                 console.log("line: " + end);
             else
                 console.log("lines: " + start + "-" + end);
+        },
+        "Shift-Enter": function(cm)
+        {
+            ant.parse(cm);
         }
     });
 

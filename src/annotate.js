@@ -2,6 +2,7 @@ class Annotate
 {
     constructor()
     {
+        this.ast = undefined;
         this.tokens = {};
         this.clocks = [];
 
@@ -25,14 +26,78 @@ class Annotate
 
     parse(cm, from, to)
     {
-        let text = cm.getRange(from, to);
+        let text = (from == undefined || to == undefined) ? cm.getValue() : cm.getRange(from, to);
         console.log(text);
-        let ast = acorn.parse_dammit(text);
+        this.ast = acorn.parse_dammit(text);
         let callbacks = _createCallbacks(this);
-        console.log("ast", ast);
+        console.log("ast", this.ast);
 
         console.log("walker");
-        acorn.walk.simple(ast, callbacks);
+        acorn.walk.simple(this.ast, callbacks);
+    }
+
+    createClock(tokenType, node)
+    {
+        let newClock = undefined;
+
+        switch (tokenType)
+        {
+            case "Identifier": break;
+            case "Literal": break;
+            case "RegExpLiteral": break;
+            case "Program": break;
+            case "Function": break;
+            case "Statement": break;
+            case "ExpressionStatement": break;
+            case "BlockStatement": break;
+            case "EmptyStatement": break;
+            case "DebuggerStatement": break;
+            case "WithStatement": break;
+            case "ReturnStatement": break;
+            case "LabeledStatement": break;
+            case "BreakStatement": break;
+            case "ContinueStatement": break;
+            case "IfStatement": break;
+            case "SwitchStatement": break;
+            case "SwitchCase": break;
+            case "ThrowStatement": break;
+            case "TryStatement": break;
+            case "CatchClause": break;
+            case "WhileStatement": break;
+            case "DoWhileStatement": break;
+            case "ForStatement": break;
+            case "ForInStatement": break;
+            case "FunctionDeclaration": break;
+            case "VariableDeclaration": break;
+            case "VariableDeclaractor": break;
+            case "Expression": break;
+            case "ThisExpression": break;
+            case "ArrayExpression":
+                newClock = new ArrayClock(cm, this.ast, node);
+                break;
+            case "ObjectExpression": break;
+            case "Property": break;
+            case "FunctionExpression": break;
+            case "UnaryExpression": break;
+            case "UnaryOperator": break;
+            case "UpdateExpression": break;
+            case "UpdateOperator": break;
+            case "BinaryExpression": break;
+            case "BinaryOperator": break;
+            case "AssignmentExpression": break;
+            case "AssignmentOperator": break;
+            case "LogicalExpression": break;
+            case "LogicalOperator": break;
+            case "MemberExpression": break;
+            case "ConditionalExpression": break;
+            case "CallExpression": break;
+            case "NewExpression": break;
+            case "SequenceExpression": break;
+            case "Pattern": break;
+        }
+
+        if (newClock != undefined)
+            this.clocks.push(newClock);
     }
 
     tick(beatTick)
@@ -134,6 +199,8 @@ function _createCallbacks(ant)
 
                 if (state != undefined)
                     console.log("state", state);
+
+                ant.createClock(Annotate.ASTTokens[i], obj);
             };
         }
     }
