@@ -3,7 +3,42 @@
     width: 0.8em;
 }
 
-.border
+.borderLeft
 {
-    border: 1px solid grey;
+    border-left: 1px solid grey;
+}
+
+.borderTop
+{
+    border-top: 1px solid grey;
+}
+
+.borderRight
+{
+    border-right: 1px solid grey;
+}
+
+.borderBottom
+{
+    border-bottom: 1px solid grey;
+}
+
+.borderLeftOn
+{
+    border-left: 1px solid white;
+}
+
+.borderTopOn
+{
+    border-top: 1px solid white;
+}
+
+.borderRightOn
+{
+    border-right: 1px solid white;
+}
+
+.borderBottomOn
+{
+    border-bottom: 1px solid white;
 }

@@ -34,13 +34,13 @@ class Annotate
 
     parse(cm, from, to)
     {
-        let text = (from == undefined || to == undefined) ? cm.getValue() : cm.getRange(from, to);
+        let section = from == undefined || to == undefined;
+        let text = section ? cm.getValue() : cm.getRange(from, to);
         console.log(text);
         this.ast = acorn.parse_dammit(text);
         let callbacks = _createCallbacks(this);
         console.log("ast", this.ast);
 
-        console.log("walker");
         acorn.walk.simple(this.ast, callbacks);
     }
 

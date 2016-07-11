@@ -63,7 +63,15 @@ class ArrayClock extends Clock
         let nodeEnd = this.calcPosition(cm, node.end);
         console.log("start: ", nodeStart);
         console.log("end: ", nodeEnd);
-
-        this.textMarker = cm.markText(nodeStart, nodeEnd, { className: "border", css: "color: #f00" });
+        
+        let nd = document.createElement("span");
+        nd.innerHTML = cm.getRange(nodeStart, nodeEnd);
+        nd.className = "borderLeft borderTop borderRight borderBottom";
+        
+        this.textMarker = cm.markText(nodeStart, nodeEnd,
+        {
+            clearOnEnter: true,
+            replacedWith: nd
+        });
     }
 }
