@@ -13,23 +13,22 @@ class Clock
         let pos = 0;
         let cmPos = undefined;
 
-        console.log("acornPos: " + acornPos);
+        //console.log("acornPos: " + acornPos);
 
         cm.eachLine(function(lineHandle)
         {
             if (cmPos != undefined) return;
 
-            console.log("pos: " + pos + " | len: " + lineHandle.text.length + " | line: " + cm.getLineNumber(lineHandle));
+            //console.log("line: " + cm.getLineNumber(lineHandle) + " | len: " + lineHandle.text.length + " | pos: " + pos);
 
             if (pos + lineHandle.text.length >= acornPos)
             {
-                console.log("set cmPos");
                 let lineNumber = cm.getLineNumber(lineHandle);
-                cmPos = { line: lineNumber, ch: acornPos - pos - lineNumber};
+                cmPos = { line: lineNumber, ch: acornPos - pos};
             }
             else
             {
-                pos += lineHandle.text.length;
+                pos += lineHandle.text.length + 1;
             }
         });
 
@@ -56,6 +55,6 @@ class ArrayClock extends Clock
         console.log("start: ", nodeStart);
         console.log("end: ", nodeEnd);
 
-        cm.markText(nodeStart, nodeEnd, { className: "" });
+        cm.markText(nodeStart, nodeEnd, { className: "border", css: "color: #f00" });
     }
 }
