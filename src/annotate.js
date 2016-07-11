@@ -23,6 +23,14 @@ class Annotate
 
         this.tokens["ArrayExpression"] = true;
     }
+    
+    clear()
+    {
+        for (let i = 0; i < this.clocks.length; i++)
+            this.clocks[i].clear();
+        
+        this.clocks = [];
+    }
 
     parse(cm, from, to)
     {

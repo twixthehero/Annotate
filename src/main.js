@@ -96,6 +96,10 @@ function init()
         "Shift-Enter": function(cm)
         {
             ant.parse(cm);
+        },
+        "Ctrl-.": function(cm)
+        {
+            ant.clear();
         }
     });
 

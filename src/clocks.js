@@ -2,7 +2,7 @@ class Clock
 {
     constructor(cm, ast)
     {
-
+        this.textMarker = undefined;
     }
 
     calcPosition(cm, acornPos)
@@ -37,6 +37,15 @@ class Clock
 
         return cmPos;
     }
+    
+    clear()
+    {
+        if (this.textMarker)
+        {
+            this.textMarker.clear();
+            this.textMarker = undefined;
+        }
+    }
 
     tick(beat, tick)
     {
@@ -55,6 +64,6 @@ class ArrayClock extends Clock
         console.log("start: ", nodeStart);
         console.log("end: ", nodeEnd);
 
-        cm.markText(nodeStart, nodeEnd, { className: "border", css: "color: #f00" });
+        this.textMarker = cm.markText(nodeStart, nodeEnd, { className: "border", css: "color: #f00" });
     }
 }
