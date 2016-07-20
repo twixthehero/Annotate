@@ -1,0 +1,34 @@
+.breakpoint
+{
+    width: 0.8em;
+}
+
+.highlight
+{
+    background-color: #aaa;
+}
+
+.border
+{
+    border: 1px solid grey;
+}
+
+.borderleft
+{
+    border-left: 1px solid grey;
+}
+
+.borderright
+{
+    border-right: 1px solid grey;
+}
+
+.borderup
+{
+    border-top: 1px solid grey;
+}
+
+.borderdown
+{
+    border-bottom: 1px solid grey;
+}

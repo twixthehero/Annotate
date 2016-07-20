@@ -21,8 +21,12 @@ let tickrate = bpmTime * baseTickrate;
 let bpmTimer = 0;
 
 //current beat
-//can be a fraction (e.g. 1.25, etc)
 let beat = 0;
+
+//current tick within the current beat
+let currentTick = 0;
+
+let ticksPerBeat = bpmTime / tickrate;
 
 //current play state
 let playState = EPlayState.PLAYING;
@@ -52,6 +56,7 @@ function init()
     console.log("bpm: " + bpm);
     console.log("bpmTime: " + bpmTime);
     console.log("tickrate: " + tickrate);
+    console.log("ticksPerBeat: " + ticksPerBeat);
 
     let info = cm.lineInfo(beat);
     cm.setGutterMarker(beat, "breakpoint", info.gutterMarkers ? null : _makeMarker());
@@ -131,17 +136,21 @@ function update()
 
 function tick()
 {
-    ant.tick(beat);
+    ant.tick(beat, currentTick);
 
-    let currentBeat = Math.floor(beat);
-    let info = cm.lineInfo(currentBeat);
-    cm.setGutterMarker(currentBeat, "breakpoint", info.gutterMarkers ? null : _makeMarker());
+    currentTick += + 1;
 
-    beat = (beat + tickrate) % timeSignature.bottom;
+    if (currentTick >= ticksPerBeat)
+    {
+        let info = cm.lineInfo(beat);
+        cm.setGutterMarker(beat, "breakpoint", info.gutterMarkers ? null : _makeMarker());
 
-    currentBeat = Math.floor(beat);
-    info = cm.lineInfo(currentBeat);
-    cm.setGutterMarker(currentBeat, "breakpoint", info.gutterMarkers ? null : _makeMarker());
+        beat = (beat + 1) % timeSignature.bottom;
+        currentTick = 0;
+
+        info = cm.lineInfo(beat);
+        cm.setGutterMarker(beat, "breakpoint", info.gutterMarkers ? null : _makeMarker());
+    }
 }
 
 /*
@@ -164,6 +173,7 @@ function setTickrate(note)
 {
     baseTickrate = 1 / (timeSignature.bottom / note);
     tickrate = bpmTime * baseTickrate;
+    ticksPerBeat = bpmTime / baseTickrate;
 }
 
 function startPlayback()
@@ -187,6 +197,7 @@ function _resetMeasure()
 {
     bpmTimer = 0;
     beat = 0;
+    currentTick = 0;
 }
 
 function _calcTimings()

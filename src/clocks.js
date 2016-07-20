@@ -37,7 +37,7 @@ class Clock
 
         return cmPos;
     }
-    
+
     clear()
     {
         if (this.textMarker)
@@ -47,6 +47,10 @@ class Clock
         }
     }
 
+    /*
+     * beat - current beat within the measure
+     * tick - current tick within the current beat
+     */
     tick(beat, tick)
     {
 
@@ -61,17 +65,22 @@ class ArrayClock extends Clock
 
         let nodeStart = this.calcPosition(cm, node.start);
         let nodeEnd = this.calcPosition(cm, node.end);
-        console.log("start: ", nodeStart);
-        console.log("end: ", nodeEnd);
-        
+        //console.log("start: ", nodeStart);
+        //console.log("end: ", nodeEnd);
+
         let nd = document.createElement("span");
         nd.innerHTML = cm.getRange(nodeStart, nodeEnd);
         nd.className = "borderLeft borderTop borderRight borderBottom";
-        
+
         this.textMarker = cm.markText(nodeStart, nodeEnd,
         {
             clearOnEnter: true,
             replacedWith: nd
         });
+    }
+
+    tick(beat, tick)
+    {
+        console.log(beat + ": " + tick);
     }
 }

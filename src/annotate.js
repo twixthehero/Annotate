@@ -23,12 +23,12 @@ class Annotate
 
         this.tokens["ArrayExpression"] = true;
     }
-    
+
     clear()
     {
         for (let i = 0; i < this.clocks.length; i++)
             this.clocks[i].clear();
-        
+
         this.clocks = [];
     }
 
@@ -108,11 +108,8 @@ class Annotate
             this.clocks.push(newClock);
     }
 
-    tick(beatTick)
+    tick(beat, tick)
     {
-        let beat = Math.floor(beatTick);
-        let tick = beatTick - beat;
-
         for (let i = 0; i < this.clocks.length; i++)
             this.clocks[i].tick(beat, tick);
     }
