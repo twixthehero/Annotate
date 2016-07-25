@@ -85,7 +85,9 @@ class Annotate
                 break;
             case "ObjectExpression": break;
             case "Property": break;
-            case "FunctionExpression": break;
+            case "FunctionExpression":
+                newClock = new FunctionExpressionClock(cm, this.ast, node);
+                break;
             case "UnaryExpression": break;
             case "UnaryOperator": break;
             case "UpdateExpression": break;

@@ -32,3 +32,23 @@
 {
     border-bottom: 1px solid grey;
 }
+
+.borderleftbright
+{
+    border-left: 1px solid lightgrey;
+}
+
+.borderrightbright
+{
+    border-right: 1px solid lightgrey;
+}
+
+.borderupbright
+{
+    border-top: 1px solid lightgrey;
+}
+
+.borderdownbright
+{
+    border-bottom: 1px solid lightgrey;
+}

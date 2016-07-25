@@ -2,6 +2,7 @@ class Clock
 {
     constructor(cm, ast)
     {
+        this.prevBeat = -1;
         this.textMarker = undefined;
     }
 
@@ -50,10 +51,11 @@ class Clock
     /*
      * beat - current beat within the measure
      * tick - current tick within the current beat
+     * options - extra param to pass in extra info
      */
-    tick(beat, tick)
+    tick(beat, tick, options)
     {
-
+        this.prevBeat = beat;
     }
 }
 
@@ -63,24 +65,101 @@ class ArrayClock extends Clock
     {
         super(cm, ast);
 
-        let nodeStart = this.calcPosition(cm, node.start);
-        let nodeEnd = this.calcPosition(cm, node.end);
+        //current array index
+        this.index = -1;
+
+        //will hold current selected
+        this.currentMarker = undefined;
+
+        this.nodeStart = this.calcPosition(cm, node.start);
+        this.nodeEnd = this.calcPosition(cm, node.end);
         //console.log("start: ", nodeStart);
         //console.log("end: ", nodeEnd);
 
         let nd = document.createElement("span");
-        nd.innerHTML = cm.getRange(nodeStart, nodeEnd);
-        nd.className = "borderLeft borderTop borderRight borderBottom";
+        nd.innerHTML = cm.getRange(this.nodeStart, this.nodeEnd);
+        nd.className = "borderleft borderup borderright borderdown";
 
-        this.textMarker = cm.markText(nodeStart, nodeEnd,
+        this.text = cm.getRange(this.nodeStart, this.nodeEnd);
+        this.startIndex = 0;
+        this.endIndex = 0;
+
+        //contains the entire array expression
+        /*this.textMarker = cm.markText(this.nodeStart, this.nodeEnd,
         {
             clearOnEnter: true,
             replacedWith: nd
-        });
+        });*/
     }
 
     tick(beat, tick)
     {
-        console.log(beat + ": " + tick);
+        if (this.prevBeat != beat)
+        {
+            if (this.currentMarker != undefined)
+            {
+                this.currentMarker.clear();
+                this.currentMarker = undefined;
+            }
+
+            this.calcIndex();
+
+            let start =
+            {
+                line: this.nodeStart.line,
+                ch: this.nodeStart.ch + this.startIndex
+            };
+            let end =
+            {
+                line: this.nodeStart.line,
+                ch: this.nodeStart.ch + this.endIndex
+            };
+
+            let nd = document.createElement("span");
+            nd.innerHTML = cm.getRange(start, end);
+            nd.className = "borderleftbright borderupbright borderrightbright borderdownbright";
+
+            this.currentMarker = cm.markText(start, end,
+                {
+                    clearOnEnter: true,
+                    replacedWith: nd
+                }
+            );
+        }
+
+        //call super tick at the end to update prev beat
+        super.tick(beat, tick);
+    }
+
+    calcIndex()
+    {
+        this.startIndex = this.endIndex + 1;
+
+        while (this.text.charAt(this.startIndex) == ' ')
+            this.startIndex += 1;
+
+        if (this.startIndex >= this.text.length)
+            this.startIndex = 1;
+
+        this.endIndex = this.text.indexOf(",", this.startIndex + 1);
+
+        if (this.endIndex == -1)
+            this.endIndex = this.text.length - 1;
+    }
+}
+
+
+class FunctionExpressionClock extends Clock
+{
+    constructor(cm, ast, node)
+    {
+        super(cm, ast);
+
+
+    }
+
+    tick(beat, tick, options)
+    {
+
     }
 }
