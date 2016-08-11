@@ -66,38 +66,6 @@ function init()
 
     cm.setOption("extraKeys",
     {
-        "Ctrl-Enter": function(cm)
-        {
-            let curLine = cm.getCursor().line;
-            console.log("line: " + curLine);
-
-            ant.parse(cm, { line: curLine, ch: 0 }, { line: curLine, ch: cm.getLine(curLine).length });
-        },
-        "Alt-Enter": function(cm)
-        {
-            let line = cm.getCursor().line;
-            let start = 0;
-            let end = cm.lineCount() - 1;
-
-            for (let i = line; i <= end; i++)
-                if (cm.getLine(i) === "")
-                {
-                    end = i - 1;
-                    break;
-                }
-
-            for (let i = line - 1; i >= 0; i--)
-                if (cm.getLine(i) === "")
-                {
-                    start = i + 1;
-                    break;
-                }
-
-            if (end - start == 0)
-                console.log("line: " + end);
-            else
-                console.log("lines: " + start + "-" + end);
-        },
         "Shift-Enter": function(cm)
         {
             ant.parse(cm);

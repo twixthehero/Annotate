@@ -68,9 +68,6 @@ class ArrayClock extends Clock
         //current array index
         this.index = -1;
 
-        //will hold current selected
-        this.currentMarker = undefined;
-
         this.nodeStart = this.calcPosition(cm, node.start);
         this.nodeEnd = this.calcPosition(cm, node.end);
         //console.log("start: ", nodeStart);
@@ -83,25 +80,13 @@ class ArrayClock extends Clock
         this.text = cm.getRange(this.nodeStart, this.nodeEnd);
         this.startIndex = 0;
         this.endIndex = 0;
-
-        //contains the entire array expression
-        /*this.textMarker = cm.markText(this.nodeStart, this.nodeEnd,
-        {
-            clearOnEnter: true,
-            replacedWith: nd
-        });*/
     }
 
     tick(beat, tick)
     {
         if (this.prevBeat != beat)
         {
-            if (this.currentMarker != undefined)
-            {
-                this.currentMarker.clear();
-                this.currentMarker = undefined;
-            }
-
+            this.clear();
             this.calcIndex();
 
             let start =
@@ -119,7 +104,7 @@ class ArrayClock extends Clock
             nd.innerHTML = cm.getRange(start, end);
             nd.className = "borderleftbright borderupbright borderrightbright borderdownbright";
 
-            this.currentMarker = cm.markText(start, end,
+            this.textMarker = cm.markText(start, end,
                 {
                     clearOnEnter: true,
                     replacedWith: nd
@@ -148,18 +133,35 @@ class ArrayClock extends Clock
     }
 }
 
-
 class FunctionExpressionClock extends Clock
 {
     constructor(cm, ast, node)
     {
         super(cm, ast);
 
-
+		this.nodeStart = this.calcPosition(cm, node.start);
+        this.nodeEnd = this.calcPosition(cm, node.end);
     }
 
     tick(beat, tick, options)
     {
+		if (options != undefined && options.hasOwnProperty("value"))
+		{
+			this.textMarker.clear();
+			
+			let nd = document.createElement("span");
+            nd.innerHTML = " /* " + options.value + " */ ";
+            nd.className = "grey";
 
+            this.textMarker = cm.markText(start, end,
+                {
+                    clearOnEnter: true,
+                    replacedWith: nd
+                }
+            );
+		}
+
+        //call super tick at the end to update prev beat
+        super.tick(beat, tick);
     }
 }
